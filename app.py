@@ -2,7 +2,18 @@ import streamlit as st
 
 st.set_page_config(page_title="Mentorship Survey")
 
-st.title("Mentorship Seeking Behavior Survey")
+# ---------------- STATE ---------------- #
+
+if "step" not in st.session_state:
+    st.session_state.step = 1
+
+if "score" not in st.session_state:
+    st.session_state.score = 0
+
+if "answers" not in st.session_state:
+    st.session_state.answers = []
+
+# ---------------- QUESTIONS ---------------- #
 
 questions = [
     "How often do you approach lecturers for clarification after class?",
@@ -30,36 +41,58 @@ options = {
     "Never": 4
 }
 
-st.subheader("Enter your details")
+# ---------------- STEP 1 ---------------- #
 
-name = st.text_input("Full Name")
-dob = st.text_input("Date of Birth (DD/MM/YYYY)")
-student_id = st.text_input("Student ID")
+if st.session_state.step == 1:
+    st.title("Mentorship Survey")
 
-st.subheader("Survey Questions")
+    name = st.text_input("Full Name")
+    dob = st.text_input("Date of Birth (DD/MM/YYYY)")
+    student_id = st.text_input("Student ID")
 
-answers = []
-
-for i, q in enumerate(questions):
-    answer = st.radio(f"Q{i+1}. {q}", list(options.keys()), key=i)
-    answers.append(options[answer])
-
-if st.button("Submit Survey"):
-    if not name or not dob or not student_id:
-        st.error("Please fill in all personal details.")
-    else:
-        total_score = sum(answers)
-
-        if total_score <= 12:
-            result = "Very High Mentorship Engagement"
-        elif total_score <= 24:
-            result = "High Mentorship Engagement"
-        elif total_score <= 36:
-            result = "Moderate Engagement"
-        elif total_score <= 48:
-            result = "Low Engagement"
+    if st.button("Next"):
+        if not name or not dob or not student_id:
+            st.error("Please fill all fields")
         else:
-            result = "Very Low Engagement"
+            st.session_state.name = name
+            st.session_state.dob = dob
+            st.session_state.student_id = student_id
+            st.session_state.step = 2
 
-        st.write("Score:", total_score)
-        st.write("Result:", result)
+# ---------------- STEP 2 ---------------- #
+
+elif st.session_state.step == 2:
+    st.title("Survey Questions")
+
+    answers = []
+
+    for i, q in enumerate(questions):
+        answer = st.radio(f"Q{i+1}. {q}", list(options.keys()), key=i)
+        answers.append(options[answer])
+
+    if st.button("Submit"):
+        st.session_state.score = sum(answers)
+        st.session_state.step = 3
+
+# ---------------- STEP 3 ---------------- #
+
+elif st.session_state.step == 3:
+    score = st.session_state.score
+
+    if score <= 12:
+        result = "Very High Mentorship Engagement"
+    elif score <= 24:
+        result = "High Mentorship Engagement"
+    elif score <= 36:
+        result = "Moderate Engagement"
+    elif score <= 48:
+        result = "Low Engagement"
+    else:
+        result = "Very Low Engagement"
+
+    st.title("Result")
+    st.write("Score:", score)
+    st.write("Category:", result)
+
+    if st.button("Restart"):
+        st.session_state.step = 1
