@@ -1,0 +1,65 @@
+import streamlit as st
+
+st.set_page_config(page_title="Mentorship Survey")
+
+st.title("Mentorship Seeking Behavior Survey")
+
+questions = [
+    "How often do you approach lecturers for clarification after class?",
+    "How comfortable are you asking seniors for academic advice?",
+    "How frequently do you seek feedback on your assignments?",
+    "Do you actively look for mentors in your field of study?",
+    "How often do you participate in academic discussions with peers?",
+    "How confident are you in reaching out for help when struggling?",
+    "How often do you attend academic support sessions or workshops?",
+    "Do you follow up on advice given by mentors?",
+    "How satisfied are you with the guidance provided by lecturers?",
+    "How useful do you find advice from fellow students?",
+    "How often do you receive constructive feedback on your work?",
+    "How supported do you feel in your academic journey?",
+    "How often do you independently search for academic guidance resources?",
+    "Do you feel your mentors understand your academic needs?",
+    "How likely are you to recommend your mentor to others?"
+]
+
+options = {
+    "Always": 0,
+    "Often": 1,
+    "Sometimes": 2,
+    "Rarely": 3,
+    "Never": 4
+}
+
+st.subheader("Enter your details")
+
+name = st.text_input("Full Name")
+dob = st.text_input("Date of Birth (DD/MM/YYYY)")
+student_id = st.text_input("Student ID")
+
+st.subheader("Survey Questions")
+
+answers = []
+
+for i, q in enumerate(questions):
+    answer = st.radio(f"Q{i+1}. {q}", list(options.keys()), key=i)
+    answers.append(options[answer])
+
+if st.button("Submit Survey"):
+    if not name or not dob or not student_id:
+        st.error("Please fill in all personal details.")
+    else:
+        total_score = sum(answers)
+
+        if total_score <= 12:
+            result = "Very High Mentorship Engagement"
+        elif total_score <= 24:
+            result = "High Mentorship Engagement"
+        elif total_score <= 36:
+            result = "Moderate Engagement"
+        elif total_score <= 48:
+            result = "Low Engagement"
+        else:
+            result = "Very Low Engagement"
+
+        st.write("Score:", total_score)
+        st.write("Result:", result)
